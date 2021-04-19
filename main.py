@@ -13,7 +13,11 @@ def get_text_messages(message):
         keyboard.add(key_stomach)
         question = 'Выберите место, которое болит!'
         bot.send_message(message.from_user.id, text=question, reply_markup=keyboard)
-
+        #--------Локация-----------------
+        # keyboardReply = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+        # button_geo = types.KeyboardButton(text="Отправить местоположение", request_location=True)
+        # keyboardReply.add(button_geo)
+        # bot.send_message(message.chat.id, reply_markup=keyboardReply)
 
 
 #def get_age(message):
@@ -28,37 +32,45 @@ def get_text_messages(message):
 
 def get_pills(call,name_of_pain):
     stomach_pills = {
-        "1. Но-шпа":"https://s1.stc.all.kpcdn.net/putevoditel/projectid_103889/images/tild3233-6633-4965-a437-396236393134__1.jpg",
-        "2. Панкреатин":"https://compendium.com.ua/img/inf/pankreatin_60tab.jpg",
-        "3. Метоклопрамид":"https://s1.stc.all.kpcdn.net/putevoditel/projectid_103889/images/tild6532-3664-4834-b161-393437363263__2.jpg",
-        "4. Маалокс":"https://s1.stc.all.kpcdn.net/putevoditel/projectid_103889/images/tild3834-3135-4633-b139-656439373266__3.jpg",
-        "5. Дюспаталин":"https://s1.stc.all.kpcdn.net/putevoditel/projectid_103889/images/tild3932-3162-4234-b037-363862313038__4.jpg",
-        "6. Мотилиум":"https://s1.stc.all.kpcdn.net/putevoditel/projectid_103889/images/tild6637-6131-4266-b565-393739383161__5.jpg",
+        "1. Но-шпа":"Pictures\\No_shpa.jpg",
+        "2. Панкреатин":"Pictures\\pankreatin.jpg",
+        "3. Метоклопрамид":"Pictures\\metoclopramid.jpg",
+        "4. Маалокс":"Pictures\\maaloks.png",
+        "5. Дюспаталин":"Pictures\\duspatalin.jpg",
+        "6. Мотилиум":"Pictures\\motilium.jpg",
 
     }
     head_pills = {
-        "1. Панадол": "https://aptekanc.com/content/images/thumbs/0017944_panadol-tabl-500-mg-12-glaksosmitkljn_1.jpg",
-        "2. Спазмалгон": "https://media.add.ua/media/catalog/product/cache/1/image/720x/9df78eab33525d08d6e5fb8d27136e95/s/p/spazmalgon_n50_01/add.ua-balkanpharma-dupnitza-(bolgarija)-spazmalgon-500-mg-tabletki-%E2%84%9650-34.jpg",
-        "3. Ибупрофен": "https://maksavit.ru/upload/iblock/371/371403a02ed8c7c3c36cf9e217fd8508.jpg",
-        "4. Аспирин С": "https://maksavit.ru/upload/iblock/d51/d516346dc1f2163053808d790e437ce4.jpg",
-        "5. Парацетамол": "https://maksavit.ru/upload/iblock/653/6532cd17b822a6dc73f76b388f5559a0.jpg",
-        "6. Пенталгин": "https://maksavit.ru/upload/iblock/329/329cc5c9d26c5b4fef74f5595f75c4d4.jpg",
+        "1. Панадол": "Pictures\\panadol.jpg",
+        "2. Спазмалгон": "Pictures\\spazmalgon.jpg",
+        "3. Ибупрофен": "Pictures\\ibuprofen.jpg",
+        "4. Аспирин С": "Pictures\\aspirin.jpg",
+        "5. Парацетамол": "Pictures\\paracetamol.jpg",
+        "6. Пенталгин": "Pictures\\pentalgin.jpg",
 
     }
     if name_of_pain == "stomach":
         for key in stomach_pills:
             print(key, '->', stomach_pills[key])
             bot.send_message(call.message.chat.id, key)
-            bot.send_photo(call.message.chat.id, stomach_pills[key])
+            #bot.send_photo(call.message.chat.id, stomach_pills[key])
+            bot.send_photo(call.message.chat.id, photo = open('{}'.format(stomach_pills[key]), 'rb'))
     elif name_of_pain == "head":
         for key in head_pills:
             print(key, '->', head_pills[key])
             bot.send_message(call.message.chat.id, key)
-            bot.send_photo(call.message.chat.id, head_pills[key])
+            #bot.send_photo(call.message.chat.id, head_pills[key])
+            bot.send_photo(call.message.chat.id, photo=open('{}'.format(head_pills[key]), 'rb'))
 
 
     # bot.send_photo(chat_id, photo=open('path', 'rb'))#путь к изображению
 
+
+# @bot.message_handler(content_types=["location"])
+# def location(message):
+#     if message.location is not None:
+#         print(message.location)
+#         print("latitude: %s; longitude: %s" % (message.location.latitude, message.location.longitude))
 
 # Обработчик нажатий на кнопки
 @bot.callback_query_handler(func=lambda call: True)
