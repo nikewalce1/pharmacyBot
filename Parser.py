@@ -1,10 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
-import json
+import csv
 
 URL = 'https://366.ru/c/lekarstva/'
 HEADERS = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36'}
 HOST ='https://366.ru'
+FILE ='medications.csv'
 
 def get_html(url, params=None):
     r = requests.get(url, headers=HEADERS,params=params)
@@ -35,12 +36,6 @@ def get_content(html):
             'link': __Link(item.find('a', class_='listing_product__title')),
             'image': __Image(item.find('img', class_='lazyload'))
         })
-
-    #data = json.dumps(percent, ensure_ascii=False)
-    #load = json.loads(data)
-    #encoding='utf-8'
-    # with open("geo-wb-sklad.json", "w", encoding='utf-8') as file:
-    #     file.write(data)
     return listOfCard
 
 def __Image(item):
@@ -93,7 +88,16 @@ def __NumberOfPharmacies(item):
         item = 'None'
     return item
 
+def save_file(items, path):
+    with open(path, 'w', encoding='utf-8') as file:
+        writer =csv.writer(file, delimiter=';')#delimetr=';' - разделитель, для excel открытия
+        writer.writerow(['Название', 'Производитель', 'Содержание', 'Количество на складе', 'Цена', 'Ссылка', 'Ссылка на изображение'])
+        for item in items:
+            writer.writerow([item['title'],item['manufacturer'],item['elipsis'], item['NumberOfPharmacies'],item['price'],item['link'],item['image']])
+
 def parse():
+    URL = input('Введите URL:')
+    URL = URL.strip()
     html = get_html(URL)
     if html.status_code == 200:
         medications = []
@@ -102,6 +106,7 @@ def parse():
             print(f'Парсинг страницы {page} из {pages_count}')
             html = get_html(URL,params={'page':page})
             medications.extend(get_content(html.text))#extend - расширяет список
+        save_file(medications, FILE)
     else:
         print('Error')
 parse()
