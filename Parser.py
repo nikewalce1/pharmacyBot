@@ -1,11 +1,17 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+import Catalog
 
-URL = 'https://366.ru/c/lekarstva/'
 HEADERS = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36'}
 HOST ='https://366.ru'
-FILE ='medications.csv'
+FILE ='medicationsAkush.csv'
+
+def get_URL(name_subcat):
+    cat = Catalog.parse()
+    for href in cat:
+        if href['text'] == name_subcat:
+            return href['href']
 
 def get_html(url, params=None):
     r = requests.get(url, headers=HEADERS,params=params)
@@ -96,8 +102,8 @@ def save_file(items, path):
             writer.writerow([item['title'],item['manufacturer'],item['elipsis'], item['NumberOfPharmacies'],item['price'],item['link'],item['image']])
 
 def parse():
-    URL = input('Введите URL:')
-    URL = URL.strip()
+
+    URL = get_URL('Акушерство и гинекология').strip()
     html = get_html(URL)
     if html.status_code == 200:
         medications = []
