@@ -62,11 +62,10 @@ def parse():
         html = get_html(URL.strip())
         if html.status_code == 200:
             cat.append({
-                'Category': key['text'],
-                'SubCategory': get_catalog(html.text)
+                '{0}'.format(key['text']): get_catalog(html.text),
             })
         else:
             cat = cat.append(None)
     return cat
-parse()
-#save_to_file()
+#parse()
+save_to_file()

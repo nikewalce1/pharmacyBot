@@ -7,7 +7,7 @@ import json
 
 HEADERS = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36'}
 HOST ='https://366.ru'
-FILE ='medicationsAkush.csv'
+FILE ='medicationsInfekciya.csv'
 
 def get_URL(name_subcat):
     cat = Catalog.parse()
@@ -102,6 +102,7 @@ def save_file(items, path):
         writer.writerow(['Название', 'Производитель', 'Содержание', 'Количество на складе', 'Цена', 'Ссылка', 'Ссылка на изображение'])
         for item in items:
             writer.writerow([item['title'],item['manufacturer'],item['elipsis'], item['NumberOfPharmacies'],item['price'],item['link'],item['image']])
+
 def read_json_subcat():
     with open("subcat.json", "r", encoding='utf-8') as file:
         data = json.loads(file.read())
@@ -109,17 +110,17 @@ def read_json_subcat():
 
 
 def parse():
-    print(read_json_subcat())
-    # URL = get_URL('Акушерство и гинекология').strip()
-    # html = get_html(URL)
-    # if html.status_code == 200:
-    #     medications = []
-    #     pages_count = get_pages_count(html.text)
-    #     for page in range(1,pages_count + 1):
-    #         print(f'Парсинг страницы {page} из {pages_count}')
-    #         html = get_html(URL,params={'page':page})
-    #         medications.extend(get_content(html.text))#extend - расширяет список
-    #     save_file(medications, FILE)
-    # else:
-    #     print('Error')
+    #print(read_json_subcat())
+    URL = get_URL('Инфекционные и вирусные заболевания').strip()
+    html = get_html(URL)
+    if html.status_code == 200:
+        medications = []
+        pages_count = get_pages_count(html.text)
+        for page in range(1,pages_count + 1):
+            print(f'Парсинг страницы {page} из {pages_count}')
+            html = get_html(URL,params={'page':page})
+            medications.extend(get_content(html.text))#extend - расширяет список
+        save_file(medications, FILE)
+    else:
+        print('Error')
 parse()
