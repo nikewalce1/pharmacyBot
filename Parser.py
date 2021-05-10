@@ -7,7 +7,7 @@ import json
 
 HEADERS = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36'}
 HOST ='https://366.ru'
-FILE ='medicationsInfekciya.csv'
+
 
 def get_URL(name_subcat):
     cat = Catalog.parse()
@@ -109,18 +109,22 @@ def read_json_subcat():
         return data
 
 
-def parse():
+def parse(category, name_file):
     #print(read_json_subcat())
-    URL = get_URL('Инфекционные и вирусные заболевания').strip()
-    html = get_html(URL)
-    if html.status_code == 200:
-        medications = []
-        pages_count = get_pages_count(html.text)
-        for page in range(1,pages_count + 1):
-            print(f'Парсинг страницы {page} из {pages_count}')
-            html = get_html(URL,params={'page':page})
-            medications.extend(get_content(html.text))#extend - расширяет список
-        save_file(medications, FILE)
-    else:
-        print('Error')
-parse()
+    try:
+        URL = get_URL(category).strip()
+        FILE = name_file
+        html = get_html(URL)
+        if html.status_code == 200:
+            medications = []
+            pages_count = get_pages_count(html.text)
+            for page in range(1,pages_count + 1):
+                print(f'Парсинг страницы {page} из {pages_count}')
+                html = get_html(URL,params={'page':page})
+                medications.extend(get_content(html.text))#extend - расширяет список
+            save_file(medications, FILE)
+        else:
+            print('Error')
+    except Exception as e:
+        print(e)
+

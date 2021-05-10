@@ -12,8 +12,25 @@ def start(message):
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
+    CATALOG = ['Акушерство и гинекология', 'Аллергия', 'Инфекционные и вирусные заболевания', 'Дыхательная система',
+               'Грипп и простуда', 'Грипп и простуда', 'Противовоспалительные и обезболивающие средства',
+               'Желудочно-кишечный тракт и печень', 'Сердечно-сосудистая система',
+               'Неврологические и психические заболевания', 'Мочеполовая система и почки',
+               'Дерматологические заболевания', 'Онкологические заболевания', 'Эндокринные заболевания',
+               'Глазные и ушные капли', 'Лекарственные травы', 'Иммунитет', 'Гомеопатия', 'Обмен веществ',
+               'Препараты для анестезии, реанимации, трансфузий', 'Диабет', 'Спазмолитики']
+    print(message.text)
     if message.text == "Каталог":
         get_catalog(message.from_user.id)
+    if message.text in CATALOG:
+        category = message.text
+        name_file = message.text.replace(' ','') + '.csv'
+        print(category + ' ' + name_file)
+        bot.send_message(message.from_user.id, text='Подождите... Идет сбор информации...')
+        import Parser
+        Parser.parse(category,name_file)
+        bot.send_message(message.from_user.id, text='Сбор закончен!')
+
     if message.text == '/sstart':
         keyboard = types.InlineKeyboardMarkup()  # наша клавиатура
         key_head = types.InlineKeyboardButton(text='Голова', callback_data='head')  # кнопка «Да»
@@ -42,7 +59,7 @@ def get_text_messages(message):
     #          bot.send_message(message.from_user.id, 'Цифрами, пожалуйста')
 
 def get_catalog(id):
-    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
     button1 = types.KeyboardButton('Акушерство и гинекология')
     button2 = types.KeyboardButton('Аллергия')
     button3 = types.KeyboardButton('Инфекционные и вирусные заболевания')
@@ -64,7 +81,7 @@ def get_catalog(id):
     button19 = types.KeyboardButton('Препараты для анестезии, реанимации, трансфузий')
     button20 = types.KeyboardButton('Диабет')
     button21 = types.KeyboardButton('Спазмолитики')
-    markup.add(button1,button2,button3,button4,button5,button6,button7,button8,button9,button10,button11,button12,button13,button14,button15,button16,button17,button18,button19,button20,button21)
+    markup.add(button1,button2,button3,button4,button5,button6,button7,button8,button9,button10,button11,button12, button13, button14,button15,button16,button17,button18,button19,button20,button21)
     bot.send_message(id, "Каталог", reply_markup=markup)
 
 def get_pills(call,name_of_pain):
