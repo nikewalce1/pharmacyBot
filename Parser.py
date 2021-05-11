@@ -99,7 +99,7 @@ def __NumberOfPharmacies(item):
 
 def save_file(items, path):
     with open('Catalog\\'+path, 'w', encoding='utf-8') as file:
-        writer =csv.writer(file, delimiter=';')#delimetr=';' - разделитель, для excel открытия
+        writer =csv.writer(file, delimiter=',')#delimetr=';' - разделитель, для excel открытия
         writer.writerow(['Название', 'Производитель', 'Содержание', 'Количество на складе', 'Цена', 'Ссылка', 'Ссылка на изображение'])
         for item in items:
             writer.writerow([item['title'],item['manufacturer'],item['elipsis'], item['NumberOfPharmacies'],item['price'],item['link'],item['image']])

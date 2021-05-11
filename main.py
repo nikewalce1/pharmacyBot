@@ -1,22 +1,36 @@
 import telebot
 from telebot import types
 import Parser
+import ReadCatalog
 
 bot = telebot.TeleBot('1756019339:AAFT8q8QqCKQmvT_c7whWtZBJUunWeZzGBA')
+view = False
 
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
-    button1 = types.KeyboardButton('Каталог')
-    markup.add(button1)
+    button1 = types.KeyboardButton('Лекарства')
+    button2 = types.KeyboardButton('Сбор информации')
+    markup.add(button1,button2)
     bot.send_message(message.chat.id, "Выберите нужный!", reply_markup=markup)
+    global view
+    view = False
 
 @bot.message_handler(commands=['view'])
 def view(message):
     get_catalog(message.from_user.id)
+    global view
+    view = True
+
+@bot.message_handler(commands=['medication'])
+def medication(message):
+    get_catalog(message.from_user.id)
+    global view
+    view = False
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
+    global view
     CATALOG = ['Акушерство и гинекология', 'Аллергия', 'Инфекционные и вирусные заболевания', 'Дыхательная система',
                'Грипп и простуда', 'Грипп и простуда', 'Противовоспалительные и обезболивающие средства',
                'Желудочно-кишечный тракт и печень', 'Сердечно-сосудистая система',
@@ -25,15 +39,31 @@ def get_text_messages(message):
                'Глазные и ушные капли', 'Лекарственные травы', 'Иммунитет', 'Гомеопатия', 'Обмен веществ',
                'Препараты для анестезии, реанимации, трансфузий', 'Диабет', 'Спазмолитики']
     print(message.text)
-    if message.text == "Каталог":
+    #по нажатию на кнопку "каталог"
+    if message.text == "Сбор информации":
         get_catalog(message.from_user.id)
+    if message.text == "Лекарства":
+        get_catalog(message.from_user.id)
+        view = True
+
+    #проверяет текст на наличие в каталоге(список)
     if message.text in CATALOG:
-        category = message.text
-        name_file = message.text.replace(' ','') + '.csv'
-        print(category + ' ' + name_file)
-        bot.send_message(message.from_user.id, text='Подождите... Идет сбор информации...')
-        Parser.parse(category,name_file,message.from_user.id)
-        bot.send_message(message.from_user.id, text='Сбор закончен!')
+        if view == False:
+            category = message.text
+            name_file = message.text.replace(' ','') + '.csv'
+            print(category + ' ' + name_file)
+            bot.send_message(message.from_user.id, text='Подождите... Идет сбор информации...')
+            Parser.parse(category,name_file,message.from_user.id)
+            bot.send_message(message.from_user.id, text='Сбор закончен!')
+        elif view == True:
+            name_file = message.text.replace(' ', '') + '.csv'
+            list_catalog = ReadCatalog.read_five_row(name_file)
+            if list_catalog:
+                for row in list_catalog:
+                    bot.send_message(message.from_user.id, text=row["Название"]+".\n Цена: "+row["Цена"])
+                    bot.send_photo(message.from_user.id, row["Ссылка на изображение"])
+                    print(row["Название"]+" "+row["Цена"]+" "+row["Ссылка на изображение"])
+
 
     if message.text == '/sstart':
         keyboard = types.InlineKeyboardMarkup()  # наша клавиатура
@@ -74,7 +104,7 @@ def get_catalog(id):
     button20 = types.KeyboardButton('Диабет')
     button21 = types.KeyboardButton('Спазмолитики')
     markup.add(button1,button2,button3,button4,button5,button6,button7,button8,button9,button10,button11,button12, button13, button14,button15,button16,button17,button18,button19,button20,button21)
-    bot.send_message(id, "Каталог", reply_markup=markup)
+    bot.send_message(id, "Лекарства", reply_markup=markup)
 
 def get_pills(call,name_of_pain):
     stomach_pills = {
