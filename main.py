@@ -1,5 +1,6 @@
 import telebot
 from telebot import types
+import Parser
 
 bot = telebot.TeleBot('1756019339:AAFT8q8QqCKQmvT_c7whWtZBJUunWeZzGBA')
 
@@ -9,6 +10,7 @@ def start(message):
     button1 = types.KeyboardButton('Каталог')
     markup.add(button1)
     bot.send_message(message.chat.id, "Выберите нужный!", reply_markup=markup)
+
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
@@ -27,8 +29,7 @@ def get_text_messages(message):
         name_file = message.text.replace(' ','') + '.csv'
         print(category + ' ' + name_file)
         bot.send_message(message.from_user.id, text='Подождите... Идет сбор информации...')
-        import Parser
-        Parser.parse(category,name_file)
+        Parser.parse(category,name_file,message.from_user.id)
         bot.send_message(message.from_user.id, text='Сбор закончен!')
 
     if message.text == '/sstart':
@@ -45,18 +46,6 @@ def get_text_messages(message):
         # button_geo = types.KeyboardButton(text="Отправить местоположение", request_location=True)
         # keyboardReply.add(button_geo)
         # bot.send_message(message.chat.id, reply_markup=keyboardReply)
-
-        # --------Категории-----------------
-
-
-#def get_age(message):
-    #global age
-    #answer = message.text
-    # while age == 0: #проверяем что возраст изменился
-    #     try:
-    #          age = int(message.text) #проверяем, что возраст введен корректно
-    #     except Exception:
-    #          bot.send_message(message.from_user.id, 'Цифрами, пожалуйста')
 
 def get_catalog(id):
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)

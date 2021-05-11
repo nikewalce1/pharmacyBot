@@ -1,13 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
-import Catalog
-import SubCategory
 import json
+import Catalog
+import telebot
+from telebot import types
 
 HEADERS = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36'}
 HOST ='https://366.ru'
-
+bot = telebot.TeleBot('1756019339:AAFT8q8QqCKQmvT_c7whWtZBJUunWeZzGBA')
 
 def get_URL(name_subcat):
     cat = Catalog.parse()
@@ -97,7 +98,7 @@ def __NumberOfPharmacies(item):
     return item
 
 def save_file(items, path):
-    with open(path, 'w', encoding='utf-8') as file:
+    with open('Catalog\\'+path, 'w', encoding='utf-8') as file:
         writer =csv.writer(file, delimiter=';')#delimetr=';' - разделитель, для excel открытия
         writer.writerow(['Название', 'Производитель', 'Содержание', 'Количество на складе', 'Цена', 'Ссылка', 'Ссылка на изображение'])
         for item in items:
@@ -109,8 +110,9 @@ def read_json_subcat():
         return data
 
 
-def parse(category, name_file):
+def parse(category, name_file,userId):
     #print(read_json_subcat())
+    idMessage = ''
     try:
         URL = get_URL(category).strip()
         FILE = name_file
@@ -119,7 +121,10 @@ def parse(category, name_file):
             medications = []
             pages_count = get_pages_count(html.text)
             for page in range(1,pages_count + 1):
+                if idMessage != '':
+                    bot.delete_message(userId, idMessage.id)
                 print(f'Парсинг страницы {page} из {pages_count}')
+                idMessage = bot.send_message(userId, text=f'Парсинг страницы {page} из {pages_count}')
                 html = get_html(URL,params={'page':page})
                 medications.extend(get_content(html.text))#extend - расширяет список
             save_file(medications, FILE)
@@ -127,4 +132,4 @@ def parse(category, name_file):
             print('Error')
     except Exception as e:
         print(e)
-
+#parse('Грипп и простуда','Акушерство и гинекология.csv')
