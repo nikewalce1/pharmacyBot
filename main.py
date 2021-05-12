@@ -1,7 +1,7 @@
 import telebot
 from telebot import types
-import Parser
-import ReadCatalog
+from Parser import Parser
+from ReadCatalog import ReadCatalog
 
 bot = telebot.TeleBot('1756019339:AAFT8q8QqCKQmvT_c7whWtZBJUunWeZzGBA')
 view = False
@@ -53,11 +53,11 @@ def get_text_messages(message):
             name_file = message.text.replace(' ','') + '.csv'
             print(category + ' ' + name_file)
             bot.send_message(message.from_user.id, text='Подождите... Идет сбор информации...')
-            Parser.parse(category,name_file,message.from_user.id)
+            Parser(message.from_user.id).parse(category,name_file)
             bot.send_message(message.from_user.id, text='Сбор закончен!')
         elif view == True:
             name_file = message.text.replace(' ', '') + '.csv'
-            list_catalog = ReadCatalog.read_five_row(name_file)
+            list_catalog = ReadCatalog().read_five_row(name_file)
             if list_catalog:
                 for row in list_catalog:
                     bot.send_message(message.from_user.id, text=row["Название"]+".\n Цена: "+row["Цена"])
