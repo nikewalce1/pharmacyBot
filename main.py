@@ -63,6 +63,8 @@ def get_text_messages(message):
                     bot.send_message(message.from_user.id, text=row["Название"]+".\n Цена: "+row["Цена"])
                     bot.send_photo(message.from_user.id, row["Ссылка на изображение"])
                     print(row["Название"]+" "+row["Цена"]+" "+row["Ссылка на изображение"])
+            else:
+                bot.send_message(message.from_user.id, text="Соберите информацию для этой категории(/medication)")
 
 
     if message.text == '/sstart':
